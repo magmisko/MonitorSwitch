@@ -20,3 +20,10 @@ Small native macOS menu bar app. Swift/AppKit UI; a short-lived Objective-C help
 - Port aliases live in UserDefaults under sk.mk.InputSwitch. Port Names… stores them in portAliasesByModel keyed by stable profile id. Preserve legacy portAliases as the PA329CV fallback; never copy its labels onto another model.
 - Inputs stay in the main menu. Brightness and volume stay in Controls ▸. Read those controls only when opening the submenu. Percent labels update continuously while dragging; commit one DDC write transaction only after mouse tracking ends. Do not add polling, debounce timers, per-drag hardware writes or extra runtime dependencies.
 - Vendored m1ddc transport remains under its MIT license. Keep the license in source and app resources.
+
+## Local release checks
+
+- Use the shared MK Locks tool when available for builds, tests and measurements. Build with background priority and one local project build at a time. Never stop the owner's running app; ask them to quit it when the final tested update is ready to install.
+- Resource tests use scripts/measure_usage.py on the actual process. See PERFORMANCE.md for UI states, physical-memory accounting, WindowServer context and budgets. UI tests stay on the built-in display with the owner's agreement. Keep raw measurements and state limitations in Tests/Results.
+- Keep release-facing changes in CHANGELOG.md. Use Developer ID for releases; notarize substantial/public releases rather than each debug tweak.
+- Keep the local .githooks/pre-commit secret scanner enabled. Before pushing run gitleaks git --log-opts="origin/main..HEAD" --redact and scan any staged additions. No credentials or serial numbers in public reports.

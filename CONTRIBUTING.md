@@ -37,3 +37,9 @@ Use the built helper's `info` command for a read-only check. When testing an inp
 The app currently supports one profiled external display at a time and Apple Silicon IOAVService transport. A model needing a different protocol or transport needs a code change and additional review, rather than just a JSON entry.
 
 Please include the connection used, tested inputs, return-switch behavior, and any HDR or picture-mode restrictions in your pull request. Never include signing keys, account credentials or individual monitor serial numbers.
+
+## Development checks
+
+Install gitleaks and optionally enable the shared commit hook with `git config core.hooksPath .githooks`. The hook blocks staged secrets. Before pushing, run `gitleaks git --log-opts="origin/main..HEAD" --redact`.
+
+See [PERFORMANCE.md](PERFORMANCE.md) for testing the real running app with visible, hidden and closed UI. Local build scripts use the MK build lock when installed and keep compiler work at background priority.
