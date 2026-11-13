@@ -1,7 +1,9 @@
-MonitorSwitch 1.3
+MonitorSwitch 1.4
 
-See README.md for installation, requirements, keyboard shortcuts and build instructions.
+Inputs stay in the main menu. Brightness and volume are under Controls.
+Percentages update while dragging; hardware updates happen on release.
 
-Supports one ASUS ProArt PA329CV over USB-C on an Apple Silicon Mac, macOS 14 or later.
+See README.md for supported models, installation and shortcuts.
+See CONTRIBUTING.md to request or contribute another monitor profile.
 Project and downloads: https://github.com/magmisko/MonitorSwitch
 License: MIT.

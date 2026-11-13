@@ -12,10 +12,11 @@ Small native macOS menu bar app. Swift/AppKit UI; a short-lived Objective-C help
 
 ## Device and validation
 
-- This release supports the ASUS PA329CV model (vendor AUS, product 12846) over USB-C on Apple Silicon. Never hardcode an individual monitor serial number. Fail without sending a command if multiple supported displays are connected.
-- Input values are USB-C 19, DisplayPort 15, HDMI 1 17, HDMI 2 18. The model uses 19 rather than the common USB-C value 27.
+- Profiles in monitors.json support ASUS PA329CV (AUS, 12846) and PG42UQ (AUS, 17120) on Apple Silicon. New ordinary MCCS models belong in that catalog, with verification evidence, rather than hardcoded UI or transport branches. Never hardcode an individual monitor serial number. Fail without sending a command if multiple supported displays are connected. Validate contributions with scripts/validate_profiles.py and the Tests suite.
+- PA329CV inputs: USB-C 19, DisplayPort 15, HDMI 1 17, HDMI 2 18. PG42UQ inputs: DP 15, HDMI 1/2 17/18, HDMI 3/4 83/84 (confirmed in live capabilities). Never reuse a port mapping across models without evidence.
 - A DDC write must be repeated twice with a delay on this unit. Validate read replies and checksums. Serialize requests. Preserve bounds on subprocess duration.
 - USB-C ↔ HDMI 2 was tested in both directions and the user confirmed the Nintendo image. Do not claim the signal is present merely from the input register. DisplayPort and HDMI 1 have no active-source validation yet.
-- Do not change monitor brightness, power, firmware, or factory settings as part of an input-switch test. Restore the original input after any automated test.
-- Port aliases live in UserDefaults under `sk.mk.InputSwitch`, are editable from “Port Names…”, and must survive updates.
+- Do not change brightness as part of an input-switch test. Dedicated brightness/volume tests may make one small bounded change, validate readback, and must restore the original value. PG42UQ brightness 50→49→50 and volume 19→18→19 passed. PA329CV brightness/volume still need live write validation. Never send power, firmware, factory-reset or unknown VCP writes. Restore the original input after any automated input test.
+- Port aliases live in UserDefaults under sk.mk.InputSwitch. Port Names… stores them in portAliasesByModel keyed by stable profile id. Preserve legacy portAliases as the PA329CV fallback; never copy its labels onto another model.
+- Inputs stay in the main menu. Brightness and volume stay in Controls ▸. Read those controls only when opening the submenu. Percent labels update continuously while dragging; commit one DDC write transaction only after mouse tracking ends. Do not add polling, debounce timers, per-drag hardware writes or extra runtime dependencies.
 - Vendored m1ddc transport remains under its MIT license. Keep the license in source and app resources.

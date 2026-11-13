@@ -1,0 +1,16 @@
+name: Validate monitor profiles
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  profiles:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.1.0
+        with:
+          python-version: '3.x'
+      - run: python3 scripts/validate_profiles.py
+      - run: python3 -m unittest discover -s Tests

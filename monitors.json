@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "monitors": [
+    {
+      "id": "asus-pa329cv",
+      "manufacturer": "AUS",
+      "productID": 12846,
+      "name": "ASUS ProArt PA329CV",
+      "ports": [
+        {
+          "name": "USB-C",
+          "code": 19
+        },
+        {
+          "name": "DisplayPort",
+          "code": 15
+        },
+        {
+          "name": "HDMI 1",
+          "code": 17
+        },
+        {
+          "name": "HDMI 2",
+          "code": 18
+        }
+      ],
+      "controls": [
+        "brightness",
+        "volume"
+      ],
+      "verification": "USB-C and HDMI 2 switching confirmed on hardware; brightness and volume use standard MCCS codes and still need live write validation on this model."
+    },
+    {
+      "id": "asus-pg42uq",
+      "manufacturer": "AUS",
+      "productID": 17120,
+      "name": "ASUS ROG Swift OLED PG42UQ",
+      "ports": [
+        {
+          "name": "DisplayPort",
+          "code": 15
+        },
+        {
+          "name": "HDMI 1",
+          "code": 17
+        },
+        {
+          "name": "HDMI 2",
+          "code": 18
+        },
+        {
+          "name": "HDMI 3",
+          "code": 83
+        },
+        {
+          "name": "HDMI 4",
+          "code": 84
+        }
+      ],
+      "controls": [
+        "brightness",
+        "volume"
+      ],
+      "verification": "All five input values confirmed by the capabilities reply; DisplayPort read confirmed. Brightness and volume writes/readbacks verified and original values restored. Active HDMI signals have not been checked; HDMI 3/4 naming follows firmware mapping."
+    }
+  ]
+}

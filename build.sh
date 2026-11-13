@@ -8,6 +8,7 @@ APP="$OUT/MonitorSwitch.app"
 SDK_VERSION="$(xcrun --show-sdk-version)"
 SDK_PATH="$(xcrun --show-sdk-path)"
 MIN_VERSION=14.0
+python3 scripts/validate_profiles.py
 mkdir -p build/ModuleCache "$APP/Contents/MacOS" "$APP/Contents/Resources"
 LINK_FLAGS=(-Xlinker -platform_version -Xlinker macos -Xlinker "$MIN_VERSION" -Xlinker "$SDK_VERSION")
 xcrun clang -Os -fmodules -fmodules-cache-path="$PWD/build/ModuleCache" \
@@ -20,6 +21,7 @@ xcrun swiftc -O -sdk "$SDK_PATH" -target "arm64-apple-macos$MIN_VERSION" \
   "${LINK_FLAGS[@]}" main.swift -o "$APP/Contents/MacOS/InputSwitch"
 cp Vendor/m1ddc/LICENSE "$APP/Contents/Resources/m1ddc-LICENSE.txt"
 cp LICENSE "$APP/Contents/Resources/LICENSE.txt"
+cp monitors.json "$APP/Contents/Resources/monitors.json"
 cat > "$APP/Contents/Info.plist" <<'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -31,8 +33,8 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
 <key>CFBundlePackageType</key><string>APPL</string>
 <key>CFBundleDevelopmentRegion</key><string>en</string>
 <key>CFBundleLocalizations</key><array><string>en</string></array>
-<key>CFBundleShortVersionString</key><string>1.3</string>
-<key>CFBundleVersion</key><string>4</string>
+<key>CFBundleShortVersionString</key><string>1.4</string>
+<key>CFBundleVersion</key><string>5</string>
 <key>LSMinimumSystemVersion</key><string>14.0</string>
 <key>LSUIElement</key><true/>
 <key>NSHighResolutionCapable</key><true/>

@@ -1,59 +1,63 @@
 # MonitorSwitch
 
-A tiny native macOS menu bar app for switching inputs on an **ASUS ProArt PA329CV**. Pick USB-C, DisplayPort, HDMI 1 or HDMI 2 without reaching for the monitor's buttons.
+A small native macOS menu bar app for switching monitor inputs. Inputs stay one click away in the main menu. **Controls ▸** keeps brightness and volume out of the way until you need them.
 
-[**Download MonitorSwitch for Apple Silicon**](https://github.com/magmisko/MonitorSwitch/releases/latest/download/MonitorSwitch.zip) · [Releases](https://github.com/magmisko/MonitorSwitch/releases)
+[**Download for Apple Silicon**](https://github.com/magmisko/MonitorSwitch/releases/latest/download/MonitorSwitch.zip) · [Releases](https://github.com/magmisko/MonitorSwitch/releases) · [Add your monitor](CONTRIBUTING.md)
 
-The official release is signed with Developer ID and notarized by Apple.
+The official release is signed with Developer ID and notarized by Apple. Requires an Apple Silicon Mac running macOS 14 or later and DDC/CI enabled on the monitor. One supported external monitor at a time.
 
-## Requirements
+## Supported models
 
-- Apple Silicon Mac running macOS 14 or later.
-- One ASUS ProArt PA329CV connected to the Mac through USB-C.
-- DDC/CI enabled in the monitor's menu: **System Setup → OSD Setup → DDC/CI**.
+| Monitor | Main-menu inputs | Connection tested | Verification |
+| --- | --- | --- | --- |
+| ASUS ProArt PA329CV | USB-C, DisplayPort, HDMI 1, HDMI 2 | USB-C | USB-C ↔ HDMI 2 switching and the physical picture confirmed. Brightness/volume need live write validation on this model. |
+| ASUS ROG Swift OLED PG42UQ | DisplayPort, HDMI 1, HDMI 2, HDMI 3, HDMI 4 | USB-C to DisplayPort | All five input values confirmed in the capabilities reply; active DisplayPort read confirmed. Brightness/volume writes and readbacks verified, with original settings restored. Active HDMI signals have not been checked. |
 
-This release supports this specific **model**, rather than a particular owner's monitor. Other monitor models and Intel Macs are not currently supported. With multiple PA329CV monitors connected, the app declines to send commands rather than choosing one arbitrarily.
+PG42UQ HDMI 3/4 names follow the [firmware mapping](https://github.com/schlarpc/asus-pg42uq-firmware-re/blob/main/ddc_surface.md#22-vcp-60--input-source-c); the capabilities reply confirms values 83 and 84 but not the printed connector labels. Report any mismatch in an issue.
+
+Other models can be added through a profile contribution. Intel Macs and monitors requiring another transport are not currently supported.
 
 ## Use
 
-1. Download the release ZIP, unzip it, and drag **MonitorSwitch.app** into **Applications**.
-2. Open the app. It appears as a small display icon in the menu bar.
-3. Choose **USB-C**, **DisplayPort**, **HDMI 1** or **HDMI 2**.
+1. Download the ZIP, unzip it, and drag **MonitorSwitch.app** into **Applications**.
+2. Open the app and click its small display icon in the menu bar.
+3. Choose an input directly, or open **Controls ▸** for brightness and volume.
 
-Choose **Port Names…** to add your own labels, such as **HDMI 2 (Switch)** or **USB-C (Mac)**. Leave a label empty to show just the port name. Labels are saved between launches and app updates.
+Percentages update while you drag a slider. The hardware update is sent once when you release it, followed by a readback. Releasing at the original value sends no setting command. The helper repeats the one setting request twice for reliability on these displays; it does not send per-drag writes. Controls the monitor does not answer are disabled. HDR or picture modes may lock brightness; the app reports an unapplied setting instead of changing the picture mode itself.
 
-| Shortcut | Input |
-| --- | --- |
-| Control + Option + Command + 1 | USB-C |
-| Control + Option + Command + 2 | DisplayPort |
-| Control + Option + Command + 3 | HDMI 1 |
-| Control + Option + Command + 4 | HDMI 2 |
+Choose **Port Names…** to add labels such as **HDMI 2 (Switch)**. Labels are saved separately for each monitor model. Existing PA329CV labels are preserved when upgrading.
 
-The menu checkmark shows the input reported by the monitor. It does not confirm a video signal: a console must be awake and its dock powered. MonitorSwitch does not send HDMI-CEC wake commands.
+Global shortcuts are **Control + Option + Command + 1–9**, in the displayed port order. PA329CV keeps its original four assignments: USB-C, DisplayPort, HDMI 1, HDMI 2. PG42UQ uses DisplayPort followed by HDMI 1–4.
+
+The checkmark shows the input reported by the monitor, rather than confirming an active video signal. A console must be awake and its dock powered. MonitorSwitch does not send HDMI-CEC wake commands. If switching back fails, use the monitor's physical input button.
 
 ## Small by design
 
-- Native Swift/AppKit menu and settings window.
-- No network calls, telemetry, web runtime or additional runtime dependencies.
-- Reads the monitor at launch, when opening the menu, and once after switching. No continuous polling.
-- Uses macOS global hotkeys without Accessibility or Screen Recording permissions.
+- Native Swift/AppKit controls; no web runtime or extra runtime dependencies.
+- No network requests, telemetry or continuous polling.
+- Reads the input at launch, when opening the main menu and after switching.
+- Reads brightness and volume only when opening Controls or verifying a requested change.
+- No Accessibility or Screen Recording permission needed for the global shortcuts.
 - Does not start automatically at login.
 
-## Compatibility notes
+The app uses Apple's private IOAVService transport, which may change in future macOS releases. Connections, adapters and inactive-input DDC availability affect compatibility.
 
-USB-C → HDMI 2 → USB-C has been tested on a physical PA329CV with a Nintendo Switch, including confirmation of the picture. DisplayPort and HDMI 1 are available but have not yet been verified with active sources.
+## Help add monitors
 
-If switching back through USB-C fails, use the monitor's physical input button. DDC availability on an inactive input depends on the monitor and connection. This app uses Apple's private IOAVService transport, which may change in future macOS releases.
+Use **About MonitorSwitch… → Monitor Support…**, or [open a monitor support request](https://github.com/magmisko/MonitorSwitch/issues/new/choose). The issue form asks for the model, connection and verified behavior, without serial numbers.
+
+Profiles live in [`monitors.json`](monitors.json). [CONTRIBUTING.md](CONTRIBUTING.md) explains privacy-safe discovery, adding a JSON profile and testing it. Pull requests run automatic profile validation. A model using ordinary MCCS input/brightness/volume codes usually needs only a profile entry, rather than a UI or transport code change.
 
 ## Build from source
 
-Requires Xcode or its Command Line Tools on an Apple Silicon Mac.
+Requires Xcode or its Command Line Tools and Python 3 for build-time profile validation. Python is not used by the app.
 
 ```sh
+python3 -m unittest discover -s Tests
 bash build.sh
 ```
 
-The app is created at `dist/MonitorSwitch.app`. Pass another output directory as the first argument. Local builds are ad hoc signed. Both binaries are linked against the actual installed SDK, and the build verifies their `LC_BUILD_VERSION` values.
+The app is created at `dist/MonitorSwitch.app`. Pass another output directory as the first argument. Local builds are ad hoc signed. Both binaries link against the actual installed SDK; the build verifies their `LC_BUILD_VERSION` values.
 
 For your own signed and notarized distribution, use your own Developer ID identity and stored Keychain profile:
 
@@ -68,4 +72,4 @@ No signing keys, Apple credentials or Keychain profiles are included.
 
 [MIT License](LICENSE). DDC transport includes modified code from [waydabber/m1ddc](https://github.com/waydabber/m1ddc), also under the MIT License; its license is retained in `Vendor/m1ddc/LICENSE` and bundled in the app.
 
-MonitorSwitch is an independent project and is not affiliated with ASUS, Apple or Nintendo.
+MonitorSwitch is independent and not affiliated with ASUS, Apple or Nintendo.

@@ -1,0 +1,43 @@
+name: Request or contribute a monitor profile
+description: Share your monitor model, connection and verified input values.
+title: "Monitor support: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Help add a monitor without changing its firmware. Do not share serial numbers, credentials or full unfiltered system reports.
+  - type: input
+    id: model
+    attributes:
+      label: Exact monitor model
+      placeholder: ASUS PA329CV
+    validations:
+      required: true
+  - type: input
+    id: connection
+    attributes:
+      label: Mac, macOS version, cable and adapters
+      placeholder: Apple Silicon Mac, macOS 26, direct USB-C to DisplayPort
+    validations:
+      required: true
+  - type: textarea
+    id: identity
+    attributes:
+      label: Privacy-safe display discovery
+      description: Paste the ddc-bridge list output described in CONTRIBUTING.md. This command does not include monitor serial numbers.
+      render: json
+  - type: textarea
+    id: inputs
+    attributes:
+      label: Input values and physical verification
+      description: Which ports and DDC values did you verify? Can you switch back? Mark untested ports clearly.
+  - type: textarea
+    id: controls
+    attributes:
+      label: Optional brightness and volume support
+      description: Note read/write results and whether the original values were restored. Leave blank if untested.
+  - type: textarea
+    id: references
+    attributes:
+      label: Manual or other primary references
+      description: Include links and, if relevant, a capabilities reply. Remove serial numbers first.
